@@ -8,11 +8,20 @@
   </head>
   <body>
     <header>
-      <h1>Desea solicitar un prestamo?</h1>
-      <button class="solicitar" onclick="solicitar()">Solicitar</button>
+      <h1 class="titulos">Financiera Chaves</h1>
     </header>
     <main>
-      <ul id="listado"></ul>
+      <h2>Quiere conocer la cotización de alguna moneda?</h2>
+      <label for="inputMoneda">Ingrese el Nombre de la moneda</label>
+      <input type="text" id="inputMoneda" />
+      <button id="buscar">Buscar</button>
+      <div id="resultado"></div>
+      <button class="monedasAll">Listado de Monedas</button>
+      <h2>Valores de las Monedas:</h2>
+      <div class="grid-container"></div>
+      <h3>Desea solicitar un prestamo?</h3>
+      <button class="solicitar">Solicitar</button>
+      <div id="listado"></div>
     </main>
     <footer></footer>
 

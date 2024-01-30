@@ -1,6 +1,19 @@
 body {
   background: bisque;
 }
+.titulos {
+  text-align: center;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.grid-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
 
 .solicitar {
   width: 8rem;
@@ -17,11 +30,4 @@ body {
   font-weight: bold;
   border-radius: 10%;
   font-size: 1.5rem;
-}
-
-header {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-content: center;
-  text-align: center;
 }
