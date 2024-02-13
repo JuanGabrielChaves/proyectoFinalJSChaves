@@ -7,7 +7,7 @@ const btnAllMonedas = document.querySelector(".monedasAll");
 const MAYOR = 21;
 const MONTO_MINIMO = 10000;
 const TEA = 50;
-
+let MONEDAS_EN_STORAGE = JSON.parse(localStorage.getItem("monedas"));
 class Persona {
   constructor(nombre, apellido, edad, dni, telefono) {
     this.nombre = nombre;
@@ -43,12 +43,20 @@ let monedas = [
   { nombre: "Peso Uruguayo", valor: 20.77 },
 ];
 
-function buscarMoneda() {
+guardarMonedasEnLocalStorage = () => {
+  const monedasJSON = JSON.stringify(monedas);
+  localStorage.setItem("monedas", monedasJSON);
+  console.log("Monedas guardadas en el localStorage.");
+};
+
+guardarMonedasEnLocalStorage();
+
+buscarMoneda = () => {
   const nombreMonedaInput = document
     .querySelector("#inputMoneda")
     .value.trim()
     .toLowerCase();
-  const monedasCoincidentes = monedas.filter((moneda) =>
+  const monedasCoincidentes = MONEDAS_EN_STORAGE.filter((moneda) =>
     moneda.nombre.toLowerCase().includes(nombreMonedaInput)
   );
   const resultadoDiv = document.querySelector("#resultado");
@@ -64,9 +72,9 @@ function buscarMoneda() {
     <p><strong>No se encontró la moneda, por favor vuelva a intentar</strong></p>
 `;
   }
-}
+};
 
-let valorParaMostrar = monedas.map((moneda) => {
+let valorParaMostrar = MONEDAS_EN_STORAGE.map((moneda) => {
   return {
     nombre: moneda.nombre,
     valor: `1 ${moneda.nombre} = <strong>Pesos Argentinos</strong> $${moneda.valor} `,
@@ -134,7 +142,14 @@ const solicitar = () => {
     } else {
       let monto = montoSolicitado();
       if (monto) {
+        let nombre = prompt("ingrese su nombre");
+        let apellido = prompt("ingrese su apellido");
+        let dni = prompt("ingrese su dni");
+        let telefono = prompt("ingrese su telefono");
+        let persona = new Persona(nombre, apellido, edad, dni, telefono);
         let cuotas = cantCuotas();
+        let solicitud = new SolicitudPrestamo(persona, monto, cuotas);
+        localStorage.setItem(`solicitud${dni}`, JSON.stringify(solicitud));
         armarForm((monto * TEA) / 100 + monto, cuotas);
       }
     }
