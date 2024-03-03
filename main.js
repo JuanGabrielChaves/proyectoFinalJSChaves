@@ -81,6 +81,16 @@ const buscarMoneda = () => {
     .querySelector("#inputMoneda")
     .value.trim()
     .toLowerCase();
+
+  if (!nombreMonedaInput) {
+    Swal.fire({
+      title: "No hay datos para mostrar",
+      text: "Debe ingresar un tipo de dólar!",
+      icon: "error",
+    });
+    return;
+  }
+
   const todasLasMonedas = JSON.parse(localStorage.getItem("monedas"));
   const monedasCoincidentes = todasLasMonedas.filter((moneda) =>
     moneda.nombre.toLowerCase().includes(nombreMonedaInput)

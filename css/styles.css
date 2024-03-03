@@ -4,6 +4,9 @@ body {
 .titulos {
   text-align: center;
 }
+#resultado {
+  margin-top: 1.5rem;
+}
 .grid-container-dls {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
