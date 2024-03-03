@@ -7,7 +7,8 @@ const btnAllMonedas = document.querySelector(".monedasAll");
 const MAYOR = 21;
 const MONTO_MINIMO = 10000;
 const TEA = 50;
-let MONEDAS_EN_STORAGE = JSON.parse(localStorage.getItem("monedas"));
+const datosAGuardar = [];
+
 class Persona {
   constructor(nombre, apellido, edad, dni, telefono) {
     this.nombre = nombre;
@@ -32,31 +33,56 @@ class SolicitudPrestamo {
   }
 }
 
-let monedas = [
-  { nombre: "Dolar BNA", valor: 804.5 },
-  { nombre: "Dolar MEP", valor: 1218.25 },
-  { nombre: "Dolar Blue", valor: 1249.8 },
-  { nombre: "Euro", valor: 887.97 },
-  { nombre: "Reales", valor: 167.8 },
-  { nombre: "Libra Esterlina", valor: 1041.97 },
-  { nombre: "Yen", valor: 5.6094 },
-  { nombre: "Peso Uruguayo", valor: 20.77 },
-];
+// Variable para controlar si los datos ya se cargaron
+let datosCargados = false;
+// Función asincrona que trae los datos del dolar de la api: dolarapi
+const traerDatosDolares = async () => {
+  if (!datosCargados) {
+    // Verifica si los datos aún no se han cargado
+    try {
+      const response = await fetch("https://dolarapi.com/v1/dolares");
+      const data = await response.json();
 
-guardarMonedasEnLocalStorage = () => {
-  const monedasJSON = JSON.stringify(monedas);
-  localStorage.setItem("monedas", monedasJSON);
-  console.log("Monedas guardadas en el localStorage.");
+      // Guardar los datos en el localStorage
+      localStorage.setItem("monedas", JSON.stringify(data));
+      console.log("Monedas guardadas en el localStorage");
+
+      // Crear elementos en el DOM con los datos
+      const datosDls = document.querySelector(".datos-dls");
+      const titulo = document.createElement("div");
+      titulo.innerHTML = `<h2>Datos actuales por tipo de dólar:</h2>`;
+      datosDls.appendChild(titulo);
+      const gridContainer = document.querySelector(".grid-container-dls");
+
+      data.forEach((moneda) => {
+        const gridItem = document.createElement("div");
+        gridItem.classList.add("grid-item");
+        gridItem.innerHTML = `<strong>Dólar ${moneda.nombre}:</strong> 
+          <p>Valor de venta:  <strong>$ ${moneda.venta}</strong></p> 
+          <p>Valor de compra: <strong>$ ${moneda.compra}</strong></p>`;
+        gridContainer.appendChild(gridItem);
+      });
+
+      datosCargados = true; // Marcar los datos como cargados
+    } catch (error) {
+      console.log(error);
+    }
+  }
 };
-
-guardarMonedasEnLocalStorage();
-
-buscarMoneda = () => {
+// Función para mostrar fecha en formato amigable
+function convertirFechaCorta(fecha) {
+  const fechaNueva = new Date(fecha);
+  const opciones = { año: "numeric", mes: "short", dia: "numeric" };
+  return fechaNueva.toLocaleDateString(undefined, opciones);
+}
+// Función para buscar una moneda en los datos guardados en el localStorage
+const buscarMoneda = () => {
   const nombreMonedaInput = document
     .querySelector("#inputMoneda")
     .value.trim()
     .toLowerCase();
-  const monedasCoincidentes = MONEDAS_EN_STORAGE.filter((moneda) =>
+  const todasLasMonedas = JSON.parse(localStorage.getItem("monedas"));
+  const monedasCoincidentes = todasLasMonedas.filter((moneda) =>
     moneda.nombre.toLowerCase().includes(nombreMonedaInput)
   );
   const resultadoDiv = document.querySelector("#resultado");
@@ -64,34 +90,25 @@ buscarMoneda = () => {
     resultadoDiv.innerHTML = "";
     monedasCoincidentes.forEach((moneda) => {
       resultadoDiv.innerHTML += `
-              <p>1 <strong>${moneda.nombre}</strong>  =  <strong>$ </strong>${moneda.valor}</p>
-          `;
+        <strong>Dólar ${moneda.nombre}:</strong>
+        <p><strong>${moneda.moneda}</strong></p>
+        <p>Valor de venta:  <strong>$ ${moneda.venta}</strong></p> 
+        <p>Valor de compra: <strong>$ ${moneda.compra}</strong></p>
+        <p>Fecha de actualización: <strong>${convertirFechaCorta(
+          moneda.fechaActualizacion
+        )}</strong></p>
+      `;
     });
   } else {
     resultadoDiv.innerHTML = `
-    <p><strong>No se encontró la moneda, por favor vuelva a intentar</strong></p>
-`;
+      <p><strong>No se encontró la moneda, por favor vuelva a intentar</strong></p>
+    `;
   }
 };
 
-let valorParaMostrar = MONEDAS_EN_STORAGE.map((moneda) => {
-  return {
-    nombre: moneda.nombre,
-    valor: `1 ${moneda.nombre} = <strong>Pesos Argentinos</strong> $${moneda.valor} `,
-  };
-});
-
-crearGrillaMonedas = () => {
-  const gridContainer = document.querySelector(".grid-container");
-  valorParaMostrar.forEach((moneda) => {
-    const gridItem = document.createElement("div");
-    gridItem.classList.add("grid-item");
-    gridItem.innerHTML = `<strong>${moneda.nombre}:</strong> ${moneda.valor}`;
-    gridContainer.appendChild(gridItem);
-  });
-};
-
+// booleano que retorna true si es mayor de edad
 const esMayor = (edad) => edad >= MAYOR;
+
 const ingresoDeEdad = async () => {
   const result = await Swal.fire({
     title: "Ingrese su edad (sin puntos ni caracteres extraños)",
@@ -288,4 +305,4 @@ const solicitar = async () => {
 };
 btnBuscar.addEventListener("click", buscarMoneda);
 btnPrestamo.addEventListener("click", solicitar);
-btnAllMonedas.addEventListener("click", crearGrillaMonedas);
+btnAllMonedas.addEventListener("click", traerDatosDolares);

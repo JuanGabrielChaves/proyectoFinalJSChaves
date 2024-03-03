@@ -4,17 +4,27 @@ body {
 .titulos {
   text-align: center;
 }
-.grid-container {
+.grid-container-dls {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(7, 1fr);
   gap: 10px;
 }
 
 .grid-item {
-  border: 1px solid #ccc;
-  padding: 10px;
+  text-align: center;
+  border: 1px solid salmon;
+  padding: 5px;
 }
-
+#listado {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  height: 10rem;
+  width: 70%;
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  overflow: auto;
+}
 .solicitar {
   width: 8rem;
   height: 2.5rem;
